@@ -1,0 +1,32 @@
+name: build Ebuy App
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: v0.7.0
+      - name: Build Docker Image
+        run: docker build -t dregismerci/ebuy .
+
+
+      - name: Docker login and push
+        run: |
+          echo "${{secrets.DOCKER_PWD}}" | docker login -u ${{secrets.DOCKER_USER}} --password-stdin docker.io 
+          docker push dregismerci/ebuy
+
